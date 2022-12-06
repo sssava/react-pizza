@@ -1,28 +1,37 @@
-import React from 'react';
+import React, {useState} from 'react';
 
-const PizzaBlock = (props) => {
+const PizzaBlock = ({id, name, price, imageUrl, sizes, types}) => {
+    const [activeSize, setActiveSize] = useState(0)
+    const [activeType, setActiveType] = useState(types[0])
+    const typesNames = ["тонкое", "традиционное"]
+
     return (
         <div className="pizza-block">
             <img
                 className="pizza-block__image"
-                src="https://dodopizza-a.akamaihd.net/static/Img/Products/Pizza/ru-RU/b750f576-4a83-48e6-a283-5a8efb68c35d.jpg"
+                src={imageUrl}
                 alt="Pizza"
             />
-            <h4 className="pizza-block__title">{props.title}</h4>
+            <h4 className="pizza-block__title">{name}</h4>
             <div className="pizza-block__selector">
                 <ul>
-                    <li className="active">тонкое</li>
-                    <li>традиционное</li>
+                    {types.map(item => {
+                        return(
+                            <li className={activeType === item ? "active" : ""} onClick={() => setActiveType(item)}>{typesNames[item]}</li>
+                        )
+                    })}
                 </ul>
                 <ul>
-                    <li className="active">26 см.</li>
-                    <li>30 см.</li>
-                    <li>40 см.</li>
+                    {sizes.map((item, index) => {
+                        return(
+                            <li className={activeSize === index ? "active" : ""} onClick={() => setActiveSize(index)}>{item} см.</li>
+                        )
+                    })}
                 </ul>
             </div>
             <div className="pizza-block__bottom">
-                <div className="pizza-block__price">от {props.price} UAH</div>
-                <div className="button button--outline button--add">
+                <div className="pizza-block__price">от {price} UAH</div>
+                <button className="button button--outline button--add">
                     <svg
                         width="12"
                         height="12"
@@ -36,8 +45,8 @@ const PizzaBlock = (props) => {
                         />
                     </svg>
                     <span>Добавить</span>
-                    <i>2</i>
-                </div>
+                    <i>0</i>
+                </button>
             </div>
         </div>
     );
