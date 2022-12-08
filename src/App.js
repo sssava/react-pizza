@@ -1,21 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import './scss/app.scss'
 import Header from "./components/Header";
-import Categories from "./components/Categories";
-import Sort from "./components/Sort";
-import PizzaBlock from "./components/PizzaBlock";
-import axios from "axios";
+import {Route, Routes} from "react-router-dom";
+import Home from "./pages/Home";
+import Cart from "./pages/Cart";
 
 function App() {
-  const [items, setItems] = useState([])
-
-  useEffect(() => {
-    async function fetchData(){
-      const itemsResp = await axios.get("https://6391cf2db750c8d178ce0c12.mockapi.io/items")
-      setItems(itemsResp.data)
-    }
-    fetchData()
-  }, [])
 
   return (
     <div className="App">
@@ -23,18 +13,10 @@ function App() {
         <Header />
         <div className="content">
           <div className="container">
-            <div className="content__top">
-              <Categories />
-              <Sort />
-            </div>
-            <h2 className="content__title">Все пиццы</h2>
-            <div className="content__items">
-              {items.map((obj) => {
-                return(
-                    <PizzaBlock key={obj.id} {...obj}/>
-                )
-              })}
-            </div>
+            <Routes>
+              <Route path="/" element={<Home />}/>
+              <Route path="/cart" element={<Cart />}/>
+            </Routes>
           </div>
         </div>
       </div>
