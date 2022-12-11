@@ -4,11 +4,13 @@ import PizzaBlock from "../components/PizzaBlock/PizzaBlock";
 import Categories from "../components/Categories";
 import Sort from "../components/Sort";
 import axios from "axios";
+import Pagination from "../components/Pagination/Pagination";
 
-const Home = () => {
+const Home = ({searchValue}) => {
     const [items, setItems] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [activeCategory, setActiveCategory] = useState(0)
+    const [currentPage, setCurrentPage] = useState(1)
     const [activeSort, setActiveSort] = useState({name: "популярности", sort: "rating"})
 
     useEffect(() => {
@@ -16,7 +18,7 @@ const Home = () => {
             const sortBy = activeSort.sort.replace('-', '')
             const order = activeSort.sort.includes('-') ? "asc" : "desc"
             setIsLoading(true)
-            const itemsResp = await axios.get(`https://6391cf2db750c8d178ce0c12.mockapi.io/items?${
+            const itemsResp = await axios.get(`https://6391cf2db750c8d178ce0c12.mockapi.io/items?page=${currentPage}&limit=4&${
                 activeCategory > 0 ? `category=${activeCategory}` : ''
                 }&sortBy=${sortBy}&order=${order}`
             )
@@ -25,7 +27,11 @@ const Home = () => {
         }
         fetchData()
         window.scrollTo(0, 0)
-    }, [activeCategory, activeSort])
+    }, [activeCategory, activeSort, currentPage])
+
+    const pizzas = items.filter(obj => {
+        return obj.name.toLowerCase().includes(searchValue.toLowerCase())
+    }).map(obj => <PizzaBlock key={obj.id} {...obj} />)
 
     return (
         <div className="container">
@@ -38,9 +44,10 @@ const Home = () => {
                 {
                     isLoading
                         ? [...new Array(6)].map((item, index) => <Skeleton key={index} />)
-                        : items.map(obj => <PizzaBlock key={obj.id} {...obj} />)
+                        : pizzas
                 }
             </div>
+            <Pagination onChangePage={(number) => setCurrentPage(number)} />
         </div>
     );
 };
