@@ -1,17 +1,20 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Skeleton from "../components/PizzaBlock/Skeleton";
 import PizzaBlock from "../components/PizzaBlock/PizzaBlock";
 import Categories from "../components/Categories";
 import Sort from "../components/Sort";
 import axios from "axios";
 import Pagination from "../components/Pagination/Pagination";
+import {SearchContext} from "../App";
 
-const Home = ({searchValue}) => {
+const Home = () => {
     const [items, setItems] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [activeCategory, setActiveCategory] = useState(0)
     const [currentPage, setCurrentPage] = useState(1)
     const [activeSort, setActiveSort] = useState({name: "популярности", sort: "rating"})
+
+    const {searchValue} = useContext(SearchContext)
 
     useEffect(() => {
         async function fetchData(){
