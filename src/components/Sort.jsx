@@ -1,14 +1,19 @@
 import React, {useState} from 'react';
+import {useDispatch, useSelector} from "react-redux";
+import {setSort} from "../redux/slices/filterSlice";
 
-const Sort = ({activeSort, onClickSort}) => {
+const Sort = () => {
+    const dispatch = useDispatch()
+    const sort = useSelector((state) => state.filter.sort)
+
     const [visibleSort, setVisibleSort] = useState(false)
     const sortNames = [
-        {name: 'популярности(DESC)', sort: "rating"},
-        {name: 'популярности(ASC)', sort: "-rating"},
-        {name: 'цене(DESC)', sort: "price"},
-        {name: 'цене(ASC)', sort: "-price"},
-        {name: 'алфавиту(DESC)', sort: "name"},
-        {name: 'алфавиту(ASC)', sort: "-name"},
+        {name: 'популярности(DESC)', sortProperty: "rating"},
+        {name: 'популярности(ASC)', sortProperty: "-rating"},
+        {name: 'цене(DESC)', sortProperty: "price"},
+        {name: 'цене(ASC)', sortProperty: "-price"},
+        {name: 'алфавиту(DESC)', sortProperty: "name"},
+        {name: 'алфавиту(ASC)', sortProperty: "-name"},
     ]
 
 
@@ -28,15 +33,16 @@ const Sort = ({activeSort, onClickSort}) => {
                     />
                 </svg>
                 <b>Сортировка по:</b>
-                <span onClick={() => setVisibleSort(!visibleSort)}>{activeSort.name}</span>
+                <span onClick={() => setVisibleSort(!visibleSort)}>{sort.name}</span>
             </div>
             {visibleSort && <div className="sort__popup">
                 <ul>
                     {sortNames.map((item, index) => {
                         return(
-                            <li key={index} className={activeSort.sort === item.sort ? "active" : ""} onClick={() => {
-                                onClickSort(item)
+                            <li key={index} className={sort.sortProperty === item.sortProperty ? "active" : ""} onClick={() => {
+                                dispatch(setSort(item))
                                 setVisibleSort(false)
+                                console.log(item)
                             }}>{item.name}</li>
                         )
                     })}

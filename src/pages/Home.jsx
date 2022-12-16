@@ -3,26 +3,36 @@ import Skeleton from "../components/PizzaBlock/Skeleton";
 import PizzaBlock from "../components/PizzaBlock/PizzaBlock";
 import Categories from "../components/Categories";
 import Sort from "../components/Sort";
-import axios from "axios";
 import Pagination from "../components/Pagination/Pagination";
+import {setCategoryId} from "../redux/slices/filterSlice";
+
+import axios from "axios";
 import {SearchContext} from "../App";
+
+import {useSelector, useDispatch} from "react-redux";
 
 const Home = () => {
     const [items, setItems] = useState([])
     const [isLoading, setIsLoading] = useState(true)
-    const [activeCategory, setActiveCategory] = useState(0)
     const [currentPage, setCurrentPage] = useState(1)
-    const [activeSort, setActiveSort] = useState({name: "популярности", sort: "rating"})
+
+
+    const {categoryId, sort} = useSelector(state => state.filter)
+    const dispatch = useDispatch()
+
+    const onClickCategory = (id) => {
+        dispatch(setCategoryId(id))
+    }
 
     const {searchValue} = useContext(SearchContext)
 
     useEffect(() => {
         async function fetchData(){
-            const sortBy = activeSort.sort.replace('-', '')
-            const order = activeSort.sort.includes('-') ? "asc" : "desc"
+            const sortBy = sort.sortProperty.replace('-', '')
+            const order = sort.sortProperty.includes('-') ? "asc" : "desc"
             setIsLoading(true)
             const itemsResp = await axios.get(`https://6391cf2db750c8d178ce0c12.mockapi.io/items?page=${currentPage}&limit=4&${
-                activeCategory > 0 ? `category=${activeCategory}` : ''
+                categoryId > 0 ? `category=${categoryId}` : ''
                 }&sortBy=${sortBy}&order=${order}`
             )
             setItems(itemsResp.data)
@@ -30,7 +40,7 @@ const Home = () => {
         }
         fetchData()
         window.scrollTo(0, 0)
-    }, [activeCategory, activeSort, currentPage])
+    }, [categoryId, sort.sortProperty, currentPage])
 
     const pizzas = items.filter(obj => {
         return obj.name.toLowerCase().includes(searchValue.toLowerCase())
@@ -39,8 +49,8 @@ const Home = () => {
     return (
         <div className="container">
             <div className="content__top">
-                <Categories activeCategory={activeCategory} onClickCategory={(id) => setActiveCategory(id)}/>
-                <Sort activeSort={activeSort} onClickSort={(id) => setActiveSort(id)} />
+                <Categories activeCategory={categoryId} onClickCategory={onClickCategory}/>
+                <Sort />
             </div>
             <h2 className="content__title">Все пиццы</h2>
             <div className="content__items">
