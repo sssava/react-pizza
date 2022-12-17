@@ -4,7 +4,7 @@ import PizzaBlock from "../components/PizzaBlock/PizzaBlock";
 import Categories from "../components/Categories";
 import Sort from "../components/Sort";
 import Pagination from "../components/Pagination/Pagination";
-import {setCategoryId} from "../redux/slices/filterSlice";
+import {setCategoryId, setCurrentPage} from "../redux/slices/filterSlice";
 
 import axios from "axios";
 import {SearchContext} from "../App";
@@ -14,14 +14,17 @@ import {useSelector, useDispatch} from "react-redux";
 const Home = () => {
     const [items, setItems] = useState([])
     const [isLoading, setIsLoading] = useState(true)
-    const [currentPage, setCurrentPage] = useState(1)
 
 
-    const {categoryId, sort} = useSelector(state => state.filter)
+    const {categoryId, sort, currentPage} = useSelector(state => state.filter)
     const dispatch = useDispatch()
 
     const onClickCategory = (id) => {
         dispatch(setCategoryId(id))
+    }
+
+    const onChangePage = (number) => {
+        dispatch(setCurrentPage(number))
     }
 
     const {searchValue} = useContext(SearchContext)
@@ -30,17 +33,18 @@ const Home = () => {
         async function fetchData(){
             const sortBy = sort.sortProperty.replace('-', '')
             const order = sort.sortProperty.includes('-') ? "asc" : "desc"
+            const search = searchValue ? `&search=${searchValue}` : ''
             setIsLoading(true)
             const itemsResp = await axios.get(`https://6391cf2db750c8d178ce0c12.mockapi.io/items?page=${currentPage}&limit=4&${
                 categoryId > 0 ? `category=${categoryId}` : ''
-                }&sortBy=${sortBy}&order=${order}`
+                }&sortBy=${sortBy}&order=${order}${search}`
             )
             setItems(itemsResp.data)
             setIsLoading(false)
         }
         fetchData()
         window.scrollTo(0, 0)
-    }, [categoryId, sort.sortProperty, currentPage])
+    }, [categoryId, sort.sortProperty, currentPage, searchValue])
 
     const pizzas = items.filter(obj => {
         return obj.name.toLowerCase().includes(searchValue.toLowerCase())
@@ -60,7 +64,7 @@ const Home = () => {
                         : pizzas
                 }
             </div>
-            <Pagination onChangePage={(number) => setCurrentPage(number)} />
+            <Pagination currentPage={currentPage} onChangePage={onChangePage} />
         </div>
     );
 };
