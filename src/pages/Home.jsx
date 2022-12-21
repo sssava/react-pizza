@@ -9,7 +9,7 @@ import { sortNames } from '../components/Sort'
 
 
 import qs from 'qs'
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 import {useSelector, useDispatch} from "react-redux";
 import {fetchPizzas, selectPizzaData} from '../redux/slices/pizzasSlice'
@@ -88,7 +88,7 @@ const Home = () => {
 
     const pizzas = items.filter(obj => {
         return obj.name.toLowerCase().includes(searchValue.toLowerCase())
-    }).map(obj => <PizzaBlock key={obj.id} {...obj} />)
+    }).map(obj => <Link key={obj.id} to={`pizza/${obj.id}`} ><PizzaBlock {...obj} /></Link>)
 
     return (
         <div className="container">
